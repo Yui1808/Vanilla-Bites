@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 100% 97%; /* #FFF8ED Vanilla Cream */
+    --foreground: 22 41% 10%; /* #251710 Espresso */
+  }
+
+  body {
+    background-color: #FFF8ED;
+    color: #251710;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: 'Fraunces', Georgia, 'Playfair Display', serif;
+  }
+}
+
+/* Custom luxury scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F8EBD8;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C58B52;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A86F37;
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(255, 248, 237, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(197, 139, 82, 0.2);
+}
+
+.glass-panel-dark {
+  background: rgba(37, 23, 16, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(197, 139, 82, 0.3);
+}
+
+/* Subtle luxury glow */
+.gold-glow {
+  box-shadow: 0 0 30px -5px rgba(197, 139, 82, 0.3);
+}
