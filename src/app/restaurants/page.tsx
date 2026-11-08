@@ -1,6 +1,7 @@
 import React from 'react';
 import { prisma } from '@/lib/prisma';
 import RestaurantListClient from './RestaurantListClient';
+import { FALLBACK_RESTAURANTS } from '@/lib/data-fallback';
 
 export const revalidate = 30;
 
@@ -9,45 +10,53 @@ export default async function RestaurantsPage({
 }: {
   searchParams: { search?: string; cuisine?: string };
 }) {
-  const allRestaurants = await prisma.restaurant.findMany({
-    where: {
-      isApproved: true,
-      isSuspended: false,
-    },
-    include: {
-      menuItems: {
-        select: {
-          id: true,
-          isVeg: true,
+  let formatted: any[] = FALLBACK_RESTAURANTS;
+
+  try {
+    const allRestaurants = await prisma.restaurant.findMany({
+      where: {
+        isApproved: true,
+        isSuspended: false,
+      },
+      include: {
+        menuItems: {
+          select: {
+            id: true,
+            isVeg: true,
+          },
         },
       },
-    },
-    orderBy: {
-      rating: 'desc',
-    },
-  });
+      orderBy: {
+        rating: 'desc',
+      },
+    });
 
-  const formatted = allRestaurants.map((r) => ({
-    id: r.id,
-    slug: r.slug,
-    name: r.name,
-    description: r.description,
-    coverImage: r.coverImage,
-    logo: r.logo,
-    cuisine: r.cuisine,
-    rating: r.rating,
-    totalReviews: r.totalReviews,
-    deliveryFee: r.deliveryFee,
-    minOrder: r.minOrder,
-    estimatedDeliveryTime: r.estimatedDeliveryTime,
-    isOpen: r.isOpen,
-    hasVegOnly: r.menuItems.length > 0 && r.menuItems.every((item) => item.isVeg),
-  }));
+    if (allRestaurants && allRestaurants.length > 0) {
+      formatted = allRestaurants.map((r) => ({
+        id: r.id,
+        slug: r.slug,
+        name: r.name,
+        description: r.description,
+        coverImage: r.coverImage,
+        logo: r.logo,
+        cuisine: r.cuisine,
+        rating: r.rating,
+        totalReviews: r.totalReviews,
+        deliveryFee: r.deliveryFee,
+        minOrder: r.minOrder,
+        estimatedDeliveryTime: r.estimatedDeliveryTime,
+        isOpen: r.isOpen,
+        isApproved: r.isApproved,
+        hasVegOnly: r.menuItems.length > 0 && r.menuItems.every((item) => item.isVeg),
+      }));
+    }
+  } catch (error) {
+    console.warn('Prisma query fallback for restaurants:', error);
+  }
 
   return (
     <div className="min-h-screen bg-vanilla-cream py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="mb-8">
           <span className="text-xs uppercase font-bold tracking-[0.25em] text-vanilla-caramel-dark block mb-2">
             Epicurean Directory
@@ -60,7 +69,6 @@ export default async function RestaurantsPage({
           </p>
         </div>
 
-        {/* Client Interactive Filter & Search Component */}
         <RestaurantListClient
           restaurants={formatted}
           initialSearch={searchParams.search || ''}
@@ -70,4 +78,3 @@ export default async function RestaurantsPage({
     </div>
   );
 }
-
